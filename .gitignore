@@ -16,3 +16,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### React ###
+src/main/webapp/reactjs/node_modules/
