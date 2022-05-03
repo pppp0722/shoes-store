@@ -1,5 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:mysql://localhost/shoes_store
-    username: root
-    password: root1234!
