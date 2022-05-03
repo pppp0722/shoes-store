@@ -24,3 +24,7 @@ out/
 src/main/webapp/reactjs/build/
 src/main/webapp/reactjs/node_modules/
 src/main/resources/static/static/
+src/main/resources/static/asset-manifest.json
+src/main/resources/static/favicon.ico
+src/main/resources/static/index.html
+
