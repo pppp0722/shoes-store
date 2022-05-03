@@ -18,4 +18,6 @@ out/
 .vscode/
 
 ### React ###
+src/main/webapp/reactjs/build/
 src/main/webapp/reactjs/node_modules/
+src/main/resources/static/static.js/
