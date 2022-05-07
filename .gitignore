@@ -1,4 +1,4 @@
-### Spring boot###
+### Spring boot ###
 HELP.md
 .gradle
 build/
@@ -27,4 +27,3 @@ src/main/resources/static/static/
 src/main/resources/static/asset-manifest.json
 src/main/resources/static/favicon.ico
 src/main/resources/static/index.html
-

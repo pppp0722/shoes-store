@@ -6,7 +6,6 @@ import Body from "./components/body/Body";
 
 const App = () => {
   const [brand, setBrand] = useState("Nike");
-
   const [orderItems, setOrderItems] = useState([]);
 
   return (

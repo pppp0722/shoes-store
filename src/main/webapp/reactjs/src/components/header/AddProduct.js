@@ -7,7 +7,6 @@ const AddProduct = ({setShowModal}) => {
     const [name, setName] = useState("");
     const [category, setCategory] = useState("SNEAKERS");
     const [brand, setBrand] = useState("");
-    const [size, setSize] = useState(0);
     const [price, setPrice] = useState(0);
     const [description, setDescription] = useState("");
 
@@ -36,16 +35,29 @@ const AddProduct = ({setShowModal}) => {
     }
 
     const handleSubmitBtnClick = () => {
-        axios.post("api/v1/products", {
+        if(name === "" || brand === "" || price === "" || description === "") {
+            alert("잘못된 입력!");
+            return;
+        }
+
+        const requestParam = {
             name: name,
             category: category,
             brand: brand,
             price: price,
             description: description
-        }).catch(response => {
+        };
 
+        axios.post("api/v1/products", requestParam)
+        .then(response => {
+            console.log(response);
+            if(response.status === 200) {
+                alert("추가 완료!");
+            } else {
+                alert("오류 발생!");
+            }
         }).catch(error => {
-            alert('업데이트 실패!');
+            alert('오류 발생!');
         });
     }
 

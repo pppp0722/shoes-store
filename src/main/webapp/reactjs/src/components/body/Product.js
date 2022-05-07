@@ -3,26 +3,24 @@ import styled from "styled-components";
 const Product = ({product, orderItems, setOrderItems}) => {
 
   const handleImgClick = () => {
-    const newOrderItem = {
-      productId: product.productId,
-      name: product.name,
-      price: product.price    
-    };
 
     let isExist = false;
-    orderItems.forEach(orderItem => {
-      if(orderItem.productId === product.productId) {
+    orderItems.forEach(orderItems => {
+      if(orderItems.productId === product.productId) {
         isExist = true;
       }
     });
     if(!isExist) {
-      setOrderItems([...orderItems, newOrderItem]);
+      setOrderItems([...orderItems, product]);
     }
   }
 
   return (
       <Wrap>
-        <Image onClick={handleImgClick}>{product.name}</Image>
+        <Image onClick={handleImgClick}>
+          <div>{product.name}</div>
+          <div>{product.price}원</div>
+        </Image>
       </Wrap>
   );
 }
@@ -35,7 +33,7 @@ const Wrap = styled.div`
 const Image = styled.div`
   width: 147px;
   height: 147px;
-  background-color: blue;s
+  background-color: white;
 `
 
 export default Product;

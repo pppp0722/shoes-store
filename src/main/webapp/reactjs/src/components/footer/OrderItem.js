@@ -1,12 +1,13 @@
 import styled from "styled-components";
 import {useState, useEffect} from "react";
 
-const OrderItem = ({orderItem, orderItems, setOrderItems, totalPrice, setTotalPrice}) => {
+const OrderItem = ({index, orderItem, orderItems, setOrderItems, totalPrice, setTotalPrice}) => {
 
   const [num, setNum] = useState(1);
 
   useEffect(() => {
     setTotalPrice(totalPrice + orderItem.price);
+    setOrderItems(orderItems);
   }, []);
 
   const handleDelBtnClick = () => {
@@ -29,6 +30,11 @@ const OrderItem = ({orderItem, orderItems, setOrderItems, totalPrice, setTotalPr
     }
   }
 
+  useEffect(() => {
+    orderItems[index].quantity = num;
+    setOrderItems(orderItems);
+  }, [num])
+
   return (
       <Wrap>
         <DelBtn onClick={handleDelBtnClick}>X</DelBtn>
@@ -42,18 +48,20 @@ const OrderItem = ({orderItem, orderItems, setOrderItems, totalPrice, setTotalPr
 }
 
 const Wrap = styled.div`
+  float: left;
   display: inline-block;
   text-align: left;
-  padding: 5px 5px 5px 5px;
+  padding: 5px 10px 5px 10px;
 `
 
 const DelBtn = styled.button`
+  color: red;
 `
 
 const Name = styled.div`
   display: inline-block;
   padding: 0 5px 0 5px;
-  width: 200px;
+  width: 210px;
   overflow: hidden;
   text-overflow: ellipsis;
 `
@@ -62,7 +70,6 @@ const Price = styled.div`
   display: inline-block;
   padding: 0 5px 0 5px;
   width: 100px;
-  background-color: blue;
   text-align: right;
 `
 

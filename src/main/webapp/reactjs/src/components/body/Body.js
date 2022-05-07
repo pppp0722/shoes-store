@@ -13,9 +13,14 @@ const Body = ({brand, orderItems, setOrderItems}) => {
         brand: brand
       }
     }).then((response) => {
-      setProducts(response.data);
+      console.log(response);
+      if(response.status === 200) {
+        setProducts(response.data);
+      } else {
+        alert('오류 발생!');
+      }
     }).catch((error) => {
-      alert('데이터를 가져오는 중 오류가 발생하였습니다!');
+      alert('오류 발생!');
     });
   }, [brand]);
 
