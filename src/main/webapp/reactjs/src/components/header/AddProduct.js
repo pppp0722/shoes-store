@@ -75,11 +75,11 @@ const AddProduct = ({setShowModal}) => {
                     <Input type="text" placeholder="name" onChange={handleNameChange}></Input>
                 </InputBox>
                 <InputBox>
-                    <RadioInput type="radio" onChange={() => handleCategoryChange('SNEAKERS')} checked></RadioInput>
+                    <RadioInput type="radio" onChange={() => handleCategoryChange('SNEAKERS')} name="radio"></RadioInput>
                     Sneakers
                 </InputBox>
                 <InputBox>
-                    <RadioInput type="radio" onChange={() => handleCategoryChange('SHOES')}></RadioInput>
+                    <RadioInput type="radio" onChange={() => handleCategoryChange('SHOES')} name="radio"></RadioInput>
                     Shoes
                 </InputBox>
                 <InputBox>

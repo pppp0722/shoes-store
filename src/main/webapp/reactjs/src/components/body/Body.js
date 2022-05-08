@@ -7,7 +7,7 @@ const Body = ({brand, orderItems, setOrderItems}) => {
 
   const [products, setProducts] = useState([]);
 
-  const [category, setCategory] = useState("SNEAKERS");
+  const [category, setCategory] = useState("ALL");
 
   useEffect(() => {
     axios.get('api/v1/products', {

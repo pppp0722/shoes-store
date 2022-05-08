@@ -18,8 +18,8 @@ public class OrderResponseDto {
     private String postcode;
     private OrderStatus orderStatus;
     private List<OrderItemResponseDto> orderItems;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static OrderResponseDto from(Order order) {
         return new OrderResponseDto(order.getOrderId(), order.getEmail(), order.getAddress(),
