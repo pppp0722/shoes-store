@@ -1,41 +1,96 @@
 package com.pppp0722.shoesstore.repository;
 
+import static com.pppp0722.shoesstore.util.JdbcUtils.toUUID;
+
 import com.pppp0722.shoesstore.model.Order;
 import com.pppp0722.shoesstore.model.OrderItem;
+import com.pppp0722.shoesstore.model.OrderStatus;
+import com.pppp0722.shoesstore.model.Product;
+import com.pppp0722.shoesstore.repository.exception.JdbcUpdateException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-@Slf4j
 @Repository
+@RequiredArgsConstructor
+@Slf4j
 public class OrderJdbcRepository implements OrderRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public OrderJdbcRepository(
-        NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    @Override
+    public Order insert(Order order) {
+        try {
+            int orderUpdate = jdbcTemplate.update(
+                "INSERT INTO orders VALUES(UUID_TO_BIN(:orderId), :email, :address, :postcode, :orderStatus, :createdAt, :updatedAt)",
+                toOrderParamMap(order));
+
+            if (orderUpdate != 1) {
+                JdbcUpdateException e = new JdbcUpdateException("Failed to insert into order!");
+                log.error("Failed to insert into order!", e);
+                throw e;
+            }
+
+            order.getOrderItems()
+                .forEach(orderItem -> {
+                    int orderItemUpdate = jdbcTemplate.update(
+                        "INSERT INTO order_item(order_id, product_id, price, quantity, created_at, updated_at) "
+                            +
+                            "VALUES(UUID_TO_BIN(:orderId), UUID_TO_BIN(:productId), :price, :quantity, :createdAt, :updatedAt)",
+                        toOrderItemParamMap(order.getOrderId(), order.getCreatedAt(),
+                            order.getUpdatedAt(),
+                            orderItem));
+
+                    if (orderItemUpdate != 1) {
+                        JdbcUpdateException e = new JdbcUpdateException(
+                            "Failed to insert into orderItem!");
+                        log.error("Failed to insert into orderItem!", e);
+                        throw e;
+                    }
+                });
+
+            log.info("Inserting order & order items success.");
+            return order;
+        } catch (DataAccessException e) {
+            log.error("An error occurred in the DB!", e);
+            throw e;
+        }
     }
 
     @Override
-    public Order insert(Order order) {
-        // to do: 트랜잭션 처리, 예외 처리
-        jdbcTemplate.update(
-            "INSERT INTO orders VALUES(UUID_TO_BIN(:orderId), :email, :address, :postcode, :orderStatus, :createdAt, :updatedAt)",
-            toOrderParamMap(order));
+    public List<Order> findByEmail(String email) {
+        try {
+            List<Order> orders = jdbcTemplate.query("SELECT * FROM orders WHERE email = :email",
+                Collections.singletonMap("email", email), orderRowMapper);
+            log.info("Finding orders by brand success.");
+            return orders;
+        } catch (DataAccessException e) {
+            log.error("An error occurred in the DB!", e);
+            throw e;
+        }
+    }
 
-        order.getOrderItems()
-            .forEach(orderItem -> jdbcTemplate.update(
-                "INSERT INTO order_item(order_id, product_id, price, quantity, created_at, updated_at) " +
-                    "VALUES(UUID_TO_BIN(:orderId), UUID_TO_BIN(:productId), :price, :quantity, :createdAt, :updatedAt)",
-                toOrderItemParamMap(order.getOrderId(), order.getCreatedAt(), order.getUpdatedAt(),
-                    orderItem)));
-
-        return order;
+    @Override
+    public List<OrderItem> findItemsById(UUID orderId) {
+        try {
+            List<OrderItem> orderItems = jdbcTemplate.query("SELECT * FROM order_item WHERE order_id = UUID_TO_BIN(:orderId)",
+                Collections.singletonMap("orderId", orderId.toString().getBytes()), orderItemRowMapper);
+            log.info("Finding order items by brand success.");
+            return orderItems;
+        } catch (DataAccessException e) {
+            log.error("An error occurred in the DB!", e);
+            throw e;
+        }
     }
 
     private Map<String, Object> toOrderParamMap(Order order) {
@@ -64,17 +119,26 @@ public class OrderJdbcRepository implements OrderRepository {
         return paramMap;
     }
 
-//    private final RowMapper<Order> orderRowMapper = (resultSet, i) -> {
-//        var productId = toUUID(resultSet.getBytes("product_id"));
-//        var name = resultSet.getString("name");
-//        var category = resultSet.getString("category");
-//        var brand = resultSet.getString("brand");
-//        var price = resultSet.getLong("price");
-//        var description = resultSet.getString("description");
-//        var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
-//        var updatedAt = resultSet.getTimestamp("updated_at").toLocalDateTime();
-//
-//        return new Order(productId, name, category, brand, price, description, createdAt,
-//            updatedAt);
-//    }
+    private final RowMapper<Order> orderRowMapper = (resultSet, i) -> {
+        var orderId = toUUID(resultSet.getBytes("order_id"));
+        var email = resultSet.getString("email");
+        var address = resultSet.getString("address");
+        var postcode = resultSet.getString("postcode");
+        var orderStatus = OrderStatus.valueOf(resultSet.getString("order_status"));
+        var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
+        var updatedAt = resultSet.getTimestamp("updated_at").toLocalDateTime();
+
+        return new Order(orderId, email, address, postcode, new ArrayList<OrderItem>(), orderStatus, createdAt, updatedAt);
+    };
+
+    private final RowMapper<OrderItem> orderItemRowMapper = (resultSet, i) -> {
+        var orderId = toUUID(resultSet.getBytes("order_id"));
+        var productId = toUUID(resultSet.getBytes("product_id"));
+        var price = resultSet.getLong("price");
+        var quantity = resultSet.getInt("quantity");
+        var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
+        var updatedAt = resultSet.getTimestamp("updated_at").toLocalDateTime();
+
+        return new OrderItem(orderId, productId, price, quantity, createdAt, updatedAt);
+    };
 }

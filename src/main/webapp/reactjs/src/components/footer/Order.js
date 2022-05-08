@@ -22,7 +22,28 @@ const Order = ({orderItems, setOrderItems}) => {
     setPostcode(e.target.value);
   }
 
+  const checkEmail = (str) => {
+    var reg = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+    if(!reg.test(str)) {
+      return false;
+    } else {
+      return true;
+    }
+  }   
+
   const handleBtnClick = () => {
+    if(orderItems.length === 0) {
+      return alert("주문할 제품들을 선택해주세요!");
+    }
+
+    if(!checkEmail(email)) {
+      return alert("이메일 형식을 확인해주세요!");
+    }
+
+    if(address === "" || postcode === "") {
+      return alert("주소와 우편번호를 입력해주세요!");
+    }
+
     const orderItemArr = [];
 
     orderItems.map(orderItem => {
@@ -50,7 +71,12 @@ const Order = ({orderItems, setOrderItems}) => {
         alert('오류 발생!');
       }
     }).catch(error => {
-      alert('오류 발생!');
+      console.log(error);
+      if(error.response.status === 400) {
+        alert(error.response.data);
+      } else if(error.response.status === 500) {
+        alert(error.response.data);
+      }
     });
   }
 

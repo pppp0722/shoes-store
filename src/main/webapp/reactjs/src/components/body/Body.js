@@ -7,6 +7,8 @@ const Body = ({brand, orderItems, setOrderItems}) => {
 
   const [products, setProducts] = useState([]);
 
+  const [category, setCategory] = useState("SNEAKERS");
+
   useEffect(() => {
     axios.get('api/v1/products', {
       params: {
@@ -20,19 +22,38 @@ const Body = ({brand, orderItems, setOrderItems}) => {
         alert('오류 발생!');
       }
     }).catch((error) => {
-      alert('오류 발생!');
+      console.log(error);
+      alert(error.response.data);
+      if(error.response.status === 400) {
+        alert(error.response.data);
+      } else if(error.response.status === 500) {
+        alert(error.response.data);
+      }
     });
   }, [brand]);
 
+  const handleSelectChange = e => {
+    setCategory(e.target.value);
+  }
+
   return (
       <Wrap>
-        <ProductList products={products} orderItems={orderItems} setOrderItems={setOrderItems}/>
+        <CategorySelect onChange={handleSelectChange}>
+          <option value="ALL">All</option>
+          <option value="SNEAKERS">Sneakers</option>
+          <option value="SHOES">Shoes</option>
+        </CategorySelect>
+        <ProductList category={category} products={products} orderItems={orderItems} setOrderItems={setOrderItems}/>
       </Wrap>
   );
 }
 
 const Wrap = styled.div`
   height: 700px;
+`
+
+const CategorySelect = styled.select`
+  margin: 5px 5px 5px 5px;
 `
 
 export default Body;

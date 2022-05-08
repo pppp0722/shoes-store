@@ -19,8 +19,8 @@ const Product = ({product, orderItems, setOrderItems}) => {
       <Wrap>
         <Image onClick={handleImgClick}>
           <div>{product.name}</div>
-          <div>{product.price}원</div>
         </Image>
+        <PriceDiv>{product.price}원</PriceDiv>
       </Wrap>
   );
 }
@@ -34,6 +34,11 @@ const Image = styled.div`
   width: 147px;
   height: 147px;
   background-color: white;
+`
+
+const PriceDiv = styled.div`
+  text-align: right;
+  height: 20px;
 `
 
 export default Product;

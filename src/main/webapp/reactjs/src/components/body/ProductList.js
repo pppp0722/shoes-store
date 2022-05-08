@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import Product from "./Product";
 
-const ProductList = ({products, orderItems, setOrderItems}) => {
+const ProductList = ({category, products, orderItems, setOrderItems}) => {
 
-  const productComponents = products.map(product =>
-    <Product product={product} orderItems={orderItems} setOrderItems={setOrderItems}/>
-  );
+  const productComponents = category !== 'ALL' ? products.filter(product => product.category === category).map(product =>
+    <Product product={product} orderItems={orderItems} setOrderItems={setOrderItems}/>) :
+    products.map(product =>
+      <Product product={product} orderItems={orderItems} setOrderItems={setOrderItems}/>);
 
   return (
     <Wrap>

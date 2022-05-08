@@ -4,10 +4,12 @@ import static com.pppp0722.shoesstore.util.JdbcUtils.toUUID;
 
 import com.pppp0722.shoesstore.model.Category;
 import com.pppp0722.shoesstore.model.Product;
+import com.pppp0722.shoesstore.repository.exception.JdbcUpdateException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,34 +17,32 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 @Slf4j
 public class ProductJdbcRepository implements ProductRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ProductJdbcRepository(
-        NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
     public Product insert(Product product) {
-
         try {
-            var update = jdbcTemplate.update(
+            int update = jdbcTemplate.update(
                 "INSERT INTO product "
                     + "VALUES(UUID_TO_BIN(:productId), :name, :category, :brand, :price, :description, :createdAt, :updatedAt)",
                 toParamMap(product));
 
             if (update != 1) {
-                RuntimeException e = new RuntimeException("Failed to insert product!");
+                JdbcUpdateException e = new JdbcUpdateException("Failed to insert product!");
                 log.error("Failed to insert product!", e);
                 throw e;
             }
 
+            log.info("Inserting product success.");
             return product;
         } catch (DataAccessException e) {
-            log.error("Can not connect to database server!", e);
+            log.error("An error occurred in the DB!", e);
+            throw e;
+        } catch (RuntimeException e) {
             throw e;
         }
     }
@@ -50,10 +50,12 @@ public class ProductJdbcRepository implements ProductRepository {
     @Override
     public List<Product> findByBrand(String brand) {
         try {
-            return jdbcTemplate.query("SELECT * FROM product WHERE brand = :brand",
+            List<Product> products = jdbcTemplate.query("SELECT * FROM product WHERE brand = :brand",
                 Collections.singletonMap("brand", brand), productRowMapper);
+            log.info("Finding products by brand success.");
+            return products;
         } catch (DataAccessException e) {
-            log.error("Can not connect to database server!", e);
+            log.error("An error occurred in the DB!", e);
             throw e;
         }
     }

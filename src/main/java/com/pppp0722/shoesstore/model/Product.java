@@ -3,7 +3,9 @@ package com.pppp0722.shoesstore.model;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import lombok.Getter;
 
+@Getter
 public class Product {
 
     private final UUID productId;
@@ -25,37 +27,5 @@ public class Product {
         this.description = description;
         this.createdAt = createdAt.truncatedTo(ChronoUnit.MILLIS);
         this.updatedAt = updatedAt.truncatedTo(ChronoUnit.MILLIS);
-    }
-
-    public UUID getProductId() {
-        return productId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public long getPrice() {
-        return price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 }

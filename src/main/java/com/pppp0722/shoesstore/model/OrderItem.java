@@ -3,7 +3,9 @@ package com.pppp0722.shoesstore.model;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import lombok.Getter;
 
+@Getter
 public class OrderItem {
 
     private final UUID orderId;
@@ -21,29 +23,5 @@ public class OrderItem {
         this.quantity = quantity;
         this.createdAt = createdAt.truncatedTo(ChronoUnit.MILLIS);
         this.updatedAt = updatedAt.truncatedTo(ChronoUnit.MILLIS);
-    }
-
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    public UUID getProductId() {
-        return productId;
-    }
-
-    public long getPrice() {
-        return price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 }

@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import lombok.Getter;
 
+@Getter
 public class Order {
 
     private final UUID orderId;
@@ -27,37 +29,5 @@ public class Order {
         this.orderStatus = orderStatus;
         this.createdAt = createdAt.truncatedTo(ChronoUnit.MILLIS);
         this.updatedAt = updatedAt.truncatedTo(ChronoUnit.MILLIS);
-    }
-
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getPostcode() {
-        return postcode;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 }

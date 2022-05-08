@@ -14,8 +14,8 @@ public class OrderItemResponseDto {
     private UUID productId;
     private long price;
     private int quantity;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static OrderItemResponseDto from(OrderItem orderItem) {
         return new OrderItemResponseDto(orderItem.getOrderId(), orderItem.getProductId(),

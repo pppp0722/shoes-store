@@ -18,8 +18,8 @@ const AddProduct = ({setShowModal}) => {
         setName(e.target.value);
     }
 
-    const handleCategoryChange = e => {
-        setCategory(e.target.value);
+    const handleCategoryChange = str => {
+        setCategory(str);
     }
 
     const handleBrandChange = e => {
@@ -50,6 +50,7 @@ const AddProduct = ({setShowModal}) => {
 
         axios.post("api/v1/products", requestParam)
         .then(response => {
+            setShowModal(false);
             console.log(response);
             if(response.status === 200) {
                 alert("추가 완료!");
@@ -57,24 +58,28 @@ const AddProduct = ({setShowModal}) => {
                 alert("오류 발생!");
             }
         }).catch(error => {
-            alert('오류 발생!');
+            console.log(error);
+            if(error.response.status === 400) {
+                alert(error.response.data);
+            } else if(error.response.status === 500) {
+                alert(error.response.data);
+            }
         });
     }
 
     return (
         <Wrap>
             <CloseBtn onClick={handleCloseBtnClick}>X</CloseBtn>
-            <form>
                 <InputBox>
                     <Input type="text" placeholder="name" onChange={handleNameChange}></Input>
                 </InputBox>
                 <InputBox>
-                    <RadioInput type="radio" id="sneakers" name="category" onChange={handleCategoryChange} value="SNEAKERS" checked></RadioInput>
-                    <label htmlFor="sneakers">Sneakers</label>
+                    <RadioInput type="radio" onChange={() => handleCategoryChange('SNEAKERS')} checked></RadioInput>
+                    Sneakers
                 </InputBox>
                 <InputBox>
-                    <RadioInput type="radio" id="shoes" name="category" onChange={handleCategoryChange} value="SHOES"></RadioInput>
-                    <label htmlFor="shoes">Shoes</label>
+                    <RadioInput type="radio" onChange={() => handleCategoryChange('SHOES')}></RadioInput>
+                    Shoes
                 </InputBox>
                 <InputBox>
                     <Input placeholder="brand" onChange={handleBrandChange}></Input>
@@ -88,7 +93,6 @@ const AddProduct = ({setShowModal}) => {
                 <InputBox>
                     <SubmitBtn onClick={handleSubmitBtnClick}>Submit</SubmitBtn>
                 </InputBox>
-            </form>
         </Wrap>
   );
 }
