@@ -19,6 +19,7 @@ const Body = ({brand, orderItems, setOrderItems}) => {
       if(response.status === 200) {
         setProducts(response.data);
       } else if(response.status === 204) {
+        setProducts([]);
         alert("데이터가 존재하지 않습니다.");
       } else {
         alert('오류 발생!');

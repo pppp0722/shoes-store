@@ -70,6 +70,7 @@ const AddProduct = ({setShowModal}) => {
     return (
         <Wrap>
             <CloseBtn onClick={handleCloseBtnClick}>X</CloseBtn>
+            <form>
                 <InputBox>
                     <Input type="text" placeholder="name" onChange={handleNameChange}></Input>
                 </InputBox>
@@ -93,6 +94,7 @@ const AddProduct = ({setShowModal}) => {
                 <InputBox>
                     <SubmitBtn onClick={handleSubmitBtnClick}>Submit</SubmitBtn>
                 </InputBox>
+            </form>
         </Wrap>
   );
 }
