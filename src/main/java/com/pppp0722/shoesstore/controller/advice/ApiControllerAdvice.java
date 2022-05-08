@@ -1,5 +1,6 @@
 package com.pppp0722.shoesstore.controller.advice;
 
+import com.pppp0722.shoesstore.repository.exception.JdbcEmptyResultException;
 import com.pppp0722.shoesstore.repository.exception.JdbcUpdateException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,11 @@ public class ApiControllerAdvice {
     @ExceptionHandler(JdbcUpdateException.class)
     public ResponseEntity<String> handleJdbcUpdateException(JdbcUpdateException e) {
         return ResponseEntity.internalServerError().body(e.getMessage());
+    }
+
+    @ExceptionHandler(JdbcEmptyResultException.class)
+    public ResponseEntity<String> handleJdbcEmptyResultException(JdbcEmptyResultException e) {
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataAccessException.class)

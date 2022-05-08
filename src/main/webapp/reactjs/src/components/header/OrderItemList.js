@@ -19,9 +19,15 @@ const OrderItemList = ({orderId, setShowModal}) => {
             }
         }).then(response => {
             console.log(response);
-            setOrderComponents(response.data.map(orderItem => <OrderItem orderItem={orderItem}/>));
+            if(response.status === 200) {
+                setOrderComponents(response.data.map(orderItem => <OrderItem orderItem={orderItem}/>));
+            } else if(response.status === 204) {
+                alert("데이터가 존재하지 않습니다.");
+              }else {
+                alert('오류 발생!');
+              }
         }).catch(error => {
-
+            console.log(error);
         });
     }, []);
 

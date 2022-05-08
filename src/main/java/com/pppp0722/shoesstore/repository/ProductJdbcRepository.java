@@ -4,6 +4,7 @@ import static com.pppp0722.shoesstore.util.JdbcUtils.toUUID;
 
 import com.pppp0722.shoesstore.model.Category;
 import com.pppp0722.shoesstore.model.Product;
+import com.pppp0722.shoesstore.repository.exception.JdbcEmptyResultException;
 import com.pppp0722.shoesstore.repository.exception.JdbcUpdateException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,8 +51,17 @@ public class ProductJdbcRepository implements ProductRepository {
     @Override
     public List<Product> findByBrand(String brand) {
         try {
-            List<Product> products = jdbcTemplate.query("SELECT * FROM product WHERE brand = :brand",
+            List<Product> products = jdbcTemplate.query(
+                "SELECT * FROM product WHERE brand = :brand",
                 Collections.singletonMap("brand", brand), productRowMapper);
+
+            if (products.isEmpty()) {
+                JdbcEmptyResultException e = new JdbcEmptyResultException(
+                    "요청하신 데이터가 존재하지 않습니다!");
+                log.error("The result does not exist.", e);
+                throw e;
+            }
+
             log.info("Finding products by brand success.");
             return products;
         } catch (DataAccessException e) {

@@ -30,12 +30,16 @@ const FindOrder = ({setShowFindModal}) => {
           })
         .then(response => {
             console.log(response);
-            setOrders(response.data);
             if(response.status === 200) {
+                setOrders(response.data);
                 alert("조회 완료!");
-            } else {
-                alert("오류 발생!");
-            }
+            } else if(response.status === 204) {
+                alert("데이터가 존재하지 않습니다.");
+                setOrders([]);
+              }else {
+                alert('오류 발생!');
+                setOrders([]);
+              }
         }).catch(error => {
             console.log(error);
             if(error.response.status === 400) {
@@ -43,6 +47,7 @@ const FindOrder = ({setShowFindModal}) => {
             } else if(error.response.status === 500) {
                 alert(error.response.data);
             }
+            setOrders([]);
         });
     }
 

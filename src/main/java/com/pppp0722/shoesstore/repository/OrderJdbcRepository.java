@@ -5,7 +5,7 @@ import static com.pppp0722.shoesstore.util.JdbcUtils.toUUID;
 import com.pppp0722.shoesstore.model.Order;
 import com.pppp0722.shoesstore.model.OrderItem;
 import com.pppp0722.shoesstore.model.OrderStatus;
-import com.pppp0722.shoesstore.model.Product;
+import com.pppp0722.shoesstore.repository.exception.JdbcEmptyResultException;
 import com.pppp0722.shoesstore.repository.exception.JdbcUpdateException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -72,7 +72,13 @@ public class OrderJdbcRepository implements OrderRepository {
         try {
             List<Order> orders = jdbcTemplate.query("SELECT * FROM orders WHERE email = :email",
                 Collections.singletonMap("email", email), orderRowMapper);
-            log.info("Finding orders by brand success.");
+            log.info("Finding orders by email success.");
+            if (orders.isEmpty()) {
+                JdbcEmptyResultException e = new JdbcEmptyResultException(
+                    "요청하신 데이터가 존재하지 않습니다!");
+                log.error("The result does not exist.", e);
+                throw e;
+            }
             return orders;
         } catch (DataAccessException e) {
             log.error("An error occurred in the DB!", e);
@@ -83,9 +89,19 @@ public class OrderJdbcRepository implements OrderRepository {
     @Override
     public List<OrderItem> findItemsById(UUID orderId) {
         try {
-            List<OrderItem> orderItems = jdbcTemplate.query("SELECT * FROM order_item WHERE order_id = UUID_TO_BIN(:orderId)",
-                Collections.singletonMap("orderId", orderId.toString().getBytes()), orderItemRowMapper);
-            log.info("Finding order items by brand success.");
+            List<OrderItem> orderItems = jdbcTemplate.query(
+                "SELECT * FROM order_item WHERE order_id = UUID_TO_BIN(:orderId)",
+                Collections.singletonMap("orderId", orderId.toString().getBytes()),
+                orderItemRowMapper);
+            log.info("Finding order items by orderId success.");
+
+            if (orderItems.isEmpty()) {
+                JdbcEmptyResultException e = new JdbcEmptyResultException(
+                    "요청하신 데이터가 존재하지 않습니다!");
+                log.error("The result does not exist.", e);
+                throw e;
+            }
+
             return orderItems;
         } catch (DataAccessException e) {
             log.error("An error occurred in the DB!", e);
@@ -128,7 +144,8 @@ public class OrderJdbcRepository implements OrderRepository {
         var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
         var updatedAt = resultSet.getTimestamp("updated_at").toLocalDateTime();
 
-        return new Order(orderId, email, address, postcode, new ArrayList<OrderItem>(), orderStatus, createdAt, updatedAt);
+        return new Order(orderId, email, address, postcode, new ArrayList<OrderItem>(), orderStatus,
+            createdAt, updatedAt);
     };
 
     private final RowMapper<OrderItem> orderItemRowMapper = (resultSet, i) -> {
